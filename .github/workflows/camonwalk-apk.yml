@@ -25,6 +25,7 @@ jobs:
         run: |
           sed -i 's/version "8.7.3"/version "8.9.2"/' CamonWalk/build.gradle.kts
           sed -i 's/compileSdk = 35/compileSdk = 36/' CamonWalk/app/build.gradle.kts
+          sed -i '/<string-array name="health_permissions">/,/<\/string-array>/d' CamonWalk/app/src/main/res/values/strings.xml
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
