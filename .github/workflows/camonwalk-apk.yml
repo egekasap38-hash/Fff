@@ -1,4 +1,4 @@
-name: CamonWalk APK Build v4
+name: CamonWalk APK Build v4 stable
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/camonwalk-apk.yml'
       - 'CamonWalk_Android_Proje.zip'
+      - 'scripts/**'
   workflow_dispatch:
 
 permissions:
