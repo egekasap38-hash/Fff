@@ -1,4 +1,4 @@
-name: CamonWalk APK Build v3 check
+name: CamonWalk APK Build v4
 
 on:
   push:
@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 scripts/camonwalk_v2_upgrade.py
           python3 scripts/camonwalk_v3_diagnostics.py
+          python3 scripts/camonwalk_v4_rate.py
 
       - name: Update Android build dependencies
         run: |
