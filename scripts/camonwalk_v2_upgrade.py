@@ -27,7 +27,6 @@ s=s.replace('''// Yazma tamamlanmadan ilerleme sayacı artırılmaz.
                     }
                     prefs.edit().putInt(KEY_WRITTEN, desired).putInt(KEY_VERIFIED, desired)
                         .putLong(KEY_LAST_END, now).commit()''')
-s=s.replace('adım Health Connect\\'e kaydedildi','adım Health Connect içinde doğrulandı')
 p.write_text(s)
 
 p=root/"java/com/camonwalk/app/MainActivity.kt"
