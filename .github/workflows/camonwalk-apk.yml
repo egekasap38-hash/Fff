@@ -1,0 +1,50 @@
+name: CamonWalk APK Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/camonwalk-apk.yml'
+      - 'CamonWalk_Android_Proje.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Android project
+        run: unzip -q CamonWalk_Android_Proje.zip
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Install SDK platform
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Compile debug APK
+        working-directory: CamonWalk
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CamonWalk-APK
+          path: CamonWalk/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
