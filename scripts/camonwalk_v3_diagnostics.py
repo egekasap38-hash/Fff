@@ -16,7 +16,7 @@ p = root / "java/com/camonwalk/app/MainActivity.kt"
 s = p.read_text()
 s = s.replace('import androidx.health.connect.client.records.StepsRecord',
     'import androidx.health.connect.client.records.StepsRecord\n' +
-    'import androidx.health.connect.client.aggregate.AggregateRequest\n' +
+    'import androidx.health.connect.client.request.AggregateRequest\n' +
     'import androidx.health.connect.client.time.TimeRangeFilter\n' +
     'import androidx.health.connect.client.records.metadata.DataOrigin\n' +
     'import java.time.Instant\nimport java.time.LocalDate\nimport java.time.ZoneId')
