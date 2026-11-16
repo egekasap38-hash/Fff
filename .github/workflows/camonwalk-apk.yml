@@ -21,6 +21,9 @@ jobs:
       - name: Extract Android project
         run: unzip -q CamonWalk_Android_Proje.zip
 
+      - name: Apply DeFit-style v2 upgrade
+        run: python3 scripts/camonwalk_v2_upgrade.py
+
       - name: Update Android build dependencies
         run: |
           sed -i 's/version "8.7.3"/version "8.9.2"/' CamonWalk/build.gradle.kts
