@@ -368,3 +368,8 @@ s=s.replace('android:text="Senkron modu: seçilen süre boyunca adım ve tahmini
  '''android:text="Seçilen hızla adım ve tahmini mesafe kaydı. Sınırsız modda Durdur'a basana kadar sürer. Android pil yönetimi hizmeti kesebilir."''')
 s=s.replace('android:text="Kaydedilen adımlar"','android:text="Kaydedilen adımlar / Hedef"')
 p.write_text(s)
+
+# Version bump for the new rate / unlimited mode
+p = Path("CamonWalk/app/build.gradle.kts")
+s = p.read_text().replace("versionCode = 3", "versionCode = 4").replace('versionName = "3.0"', 'versionName = "4.0"')
+p.write_text(s)
