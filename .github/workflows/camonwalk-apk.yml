@@ -1,4 +1,4 @@
-name: CamonWalk APK Build v3
+name: CamonWalk APK Build v3 check
 
 on:
   push:
