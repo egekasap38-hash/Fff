@@ -1,4 +1,4 @@
-name: CamonWalk APK Build v2
+name: CamonWalk APK Build v3
 
 on:
   push:
@@ -22,7 +22,9 @@ jobs:
         run: unzip -q CamonWalk_Android_Proje.zip
 
       - name: Apply DeFit-style v2 upgrade
-        run: python3 scripts/camonwalk_v2_upgrade.py
+        run: |
+          python3 scripts/camonwalk_v2_upgrade.py
+          python3 scripts/camonwalk_v3_diagnostics.py
 
       - name: Update Android build dependencies
         run: |
