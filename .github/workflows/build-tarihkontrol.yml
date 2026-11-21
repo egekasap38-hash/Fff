@@ -35,6 +35,17 @@ jobs:
           gradle-version: '8.9'
       - name: Fix minimum Android version
         run: sed -i 's/minSdk 23/minSdk 24/' TarihKontrolAPK/app/build.gradle
+      - name: Adapt Shizuku process call
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('TarihKontrolAPK/app/src/main/java/com/ege/tarihkontrol/MainActivity.java')
+          code = p.read_text()
+          old = 'Process p = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null);'
+          new = 'java.lang.reflect.Method processMethod = Shizuku.class.getDeclaredMethod("newProcess", String[].class, String[].class, String.class); processMethod.setAccessible(true); Process p = (Process) processMethod.invoke(null, new Object[]{new String[]{"sh", "-c", cmd}, null, null});'
+          assert old in code
+          p.write_text(code.replace(old, new))
+          PY
       - name: Assemble
         working-directory: TarihKontrolAPK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
