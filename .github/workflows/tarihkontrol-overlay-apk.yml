@@ -1,0 +1,37 @@
+name: Tarih Kontrol Sabit Panel APK
+on:
+  push:
+    branches: [tarihkontrol-apk-20261121]
+    paths:
+      - 'TarihKontrol_source.tar.xz'
+      - '.github/workflows/tarihkontrol-overlay-apk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract overlay source
+        run: tar -xJf TarihKontrol_source.tar.xz
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Android SDK
+        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - name: Build APK
+        working-directory: TarihKontrolOverlay
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TarihKontrol-SabitButonlar-APK
+          path: TarihKontrolOverlay/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
