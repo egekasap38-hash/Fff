@@ -1,9 +1,9 @@
-name: Tarih Kontrol Sabit Panel APK
+name: Tarih Kontrol v5 Draggable Overlay APK
 on:
   push:
     branches: [tarihkontrol-apk-20261121]
     paths:
-      - 'TarihKontrol_source.tar.xz'
+      - 'TarihKontrol_v5_OverlayService.java.xz'
       - '.github/workflows/tarihkontrol-overlay-apk.yml'
   workflow_dispatch:
 permissions:
@@ -14,20 +14,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Extract overlay source
+      - name: Extract base project
         run: tar -xJf TarihKontrol_source.tar.xz
-      - name: Fix private Shizuku process API
+      - name: Apply v5 floating buttons and home-return flow
         run: |
+          xz -dc TarihKontrol_v5_OverlayService.java.xz > TarihKontrolOverlay/app/src/main/java/com/ege/tarihkontrol/OverlayService.java
           python3 - <<'PY'
           from pathlib import Path
-          p = Path("TarihKontrolOverlay/app/src/main/java/com/ege/tarihkontrol/OverlayService.java")
+          p = Path("TarihKontrolOverlay/app/src/main/java/com/ege/tarihkontrol/MainActivity.java")
           s = p.read_text()
-          old = 'Process process = Shizuku.newProcess(new String[]{"sh", "-c", command}, null, null);'
-          new = ('java.lang.reflect.Method method = Shizuku.class.getDeclaredMethod("newProcess", String[].class, String[].class, String.class);\n'
-                 '                method.setAccessible(true);\n'
-                 '                Process process = (Process) method.invoke(null, new Object[]{new String[]{"sh", "-c", command}, null, null});')
-          assert old in s
-          p.write_text(s.replace(old, new))
+          assert "private Button overlayButton;" in s
+          s = s.replace("    private Button overlayButton;", "    private Button overlayButton;\n    private Button resetButton;")
+          assert 'overlayStatus = label("", 13, 0xFFA6B5CE, false);' in s
+          s = s.replace('        overlayStatus = label("", 13, 0xFFA6B5CE, false);', '''        resetButton = actionButton("Buton konumlarını sıfırla", 0xFF25364F);
+                  LinearLayout.LayoutParams rLp = new LinearLayout.LayoutParams(-1, dp(48));
+                  rLp.topMargin = dp(12);
+                  root.addView(resetButton, rLp);
+                  resetButton.setOnClickListener(v -> resetPositions());
+                  overlayStatus = label("", 13, 0xFFA6B5CE, false);''')
+          s = s.replace('"Panel diğer uygulamaların üzerinde açık" : "Panel kapalı"', '"Sürükle: taşı  •  Dokun: işlemi uygula" : "Panel kapalı"')
+          s = s.replace('    @Override protected void onResume()', '''    private void resetPositions() {
+                  getSharedPreferences("floating_button_positions_v5", MODE_PRIVATE).edit().clear().apply();
+                  if (OverlayService.running) {
+                      Intent reset = new Intent(this, OverlayService.class);
+                      reset.setAction(OverlayService.ACTION_RESET_POSITIONS);
+                      startService(reset);
+                  } else {
+                      overlayStatus.setText("Konumlar sıfırlandı");
+                  }
+              }
+              @Override protected void onResume()''')
+          p.write_text(s)
+          p = Path("TarihKontrolOverlay/app/build.gradle")
+          s = p.read_text().replace("versionCode 4", "versionCode 5").replace("versionName '4.0-overlay'", "versionName '5.0-draggable'")
+          p.write_text(s)
           PY
       - uses: actions/setup-java@v4
         with:
@@ -39,12 +59,12 @@ jobs:
           gradle-version: '8.11.1'
       - name: Android SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
-      - name: Build APK
+      - name: Compile APK
         working-directory: TarihKontrolOverlay
         run: gradle :app:assembleDebug --no-daemon --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: TarihKontrol-SabitButonlar-APK
+          name: TarihKontrol-v5-Suruklenebilir-APK
           path: TarihKontrolOverlay/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
