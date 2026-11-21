@@ -16,6 +16,19 @@ jobs:
         uses: actions/checkout@v4
       - name: Extract overlay source
         run: tar -xJf TarihKontrol_source.tar.xz
+      - name: Fix private Shizuku process API
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("TarihKontrolOverlay/app/src/main/java/com/ege/tarihkontrol/OverlayService.java")
+          s = p.read_text()
+          old = 'Process process = Shizuku.newProcess(new String[]{"sh", "-c", command}, null, null);'
+          new = ('java.lang.reflect.Method method = Shizuku.class.getDeclaredMethod("newProcess", String[].class, String[].class, String.class);\n'
+                 '                method.setAccessible(true);\n'
+                 '                Process process = (Process) method.invoke(null, new Object[]{new String[]{"sh", "-c", command}, null, null});')
+          assert old in s
+          p.write_text(s.replace(old, new))
+          PY
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
