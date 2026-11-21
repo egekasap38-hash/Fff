@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -33,6 +33,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Fix minimum Android version
+        run: sed -i 's/minSdk 23/minSdk 24/' TarihKontrolAPK/app/build.gradle
       - name: Assemble
         working-directory: TarihKontrolAPK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
@@ -42,3 +44,11 @@ jobs:
           name: TarihKontrol-v3-APK
           path: TarihKontrolAPK/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+      - name: Publish direct APK download
+        run: |
+          cp TarihKontrolAPK/app/build/outputs/apk/debug/app-debug.apk TarihKontrol.apk
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add TarihKontrol.apk
+          git commit -m 'Publish Tarih Kontrol v3 APK'
+          git push origin HEAD:tarihkontrol-apk-20261121
