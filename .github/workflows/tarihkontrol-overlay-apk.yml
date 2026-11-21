@@ -1,4 +1,4 @@
-name: Tarih Kontrol v6 Shizuku Crash Fix APK
+name: Tarih Kontrol v7 Game Picker APK
 on:
   push:
     branches: [tarihkontrol-apk-20261121]
@@ -51,6 +51,8 @@ jobs:
           PY
       - name: Fix Shizuku IllegalArgumentException and diagnostic messages
         run: python3 scripts/tarihkontrol_v6_fix.py
+      - name: Add installed game picker and restore selected game
+        run: python3 scripts/tarihkontrol_v7_game_select.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -67,6 +69,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: TarihKontrol-v6-HataDuzeltme-APK
+          name: TarihKontrol-v7-OyunSecme-APK
           path: TarihKontrolOverlay/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
